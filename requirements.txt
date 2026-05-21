@@ -1,0 +1,4 @@
+pymongo[srv]
+certifi
+google-cloud-pubsub
+apache-beam[gcp]
