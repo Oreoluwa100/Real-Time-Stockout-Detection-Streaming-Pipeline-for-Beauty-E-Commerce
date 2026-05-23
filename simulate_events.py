@@ -1,3 +1,6 @@
+import os
+from dotenv import load_dotenv
+load_dotenv()
 import random
 import time
 import uuid
@@ -6,8 +9,7 @@ import certifi
 from pymongo import MongoClient
 
 # MongoDB connection
-MONGO_URI = "mongodb+srv://akinsoyinuoreoluwa_db_user:UV22otAESYxaXRQH@learning-pipeline.pevnixs.mongodb.net/?appName=learning-pipeline"
-
+MONGO_URI = os.getenv("MONGO_URI")
 client = MongoClient(MONGO_URI, tlsCAFile=certifi.where())
 db = client["beautybyoa"]
 orders_collection = db["orders"]
