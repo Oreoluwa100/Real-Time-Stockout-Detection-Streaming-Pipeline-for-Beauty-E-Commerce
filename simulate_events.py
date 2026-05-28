@@ -1,12 +1,13 @@
 import os
 from dotenv import load_dotenv
-load_dotenv()
 import random
 import time
 import uuid
 from datetime import datetime, timezone
 import certifi
 from pymongo import MongoClient
+
+load_dotenv()
 
 # MongoDB connection
 MONGO_URI = os.getenv("MONGO_URI")
