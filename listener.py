@@ -1,5 +1,6 @@
 import os
 import json
+import time
 import threading
 from dotenv import load_dotenv
 import certifi
@@ -10,7 +11,7 @@ load_dotenv()
 
 # MongoDB connection
 MONGO_URI = os.getenv("MONGO_URI")
-client = MongoClient(MONGO_URI, tlsCAFile=certifi.where())
+client = MongoClient(MONGO_URI, tlsCAFile = certifi.where())
 db = client["beautybyoa"]
 
 # GCP settings
@@ -27,13 +28,23 @@ def watch_orders():
     """Watch orders collection and publish to orders-events topic"""
     print("Watching orders collection...")
     orders_collection = db["orders"]
+    last_heartbeat = time.time()
     try:
         with orders_collection.watch(full_document = "updateLookup") as stream:
-            for event in stream:
-                message = json.dumps(event, default  =str)
-                message_bytes = message.encode("utf-8")
-                future = publisher.publish(orders_topic, message_bytes)
-                print(f"[ORDERS] Published event: {future.result()}")
+            while True:
+                event = stream.try_next()
+                
+                if event is not None:
+                    message = json.dumps(event, default=str)
+                    message_bytes = message.encode("utf-8")
+                    future = publisher.publish(orders_topic, message_bytes)
+                    print(f"[ORDERS] Published event: {future.result()}")
+                
+                if time.time() - last_heartbeat >= 30:
+                    print(f"[HEARTBEAT] watch_orders is alive - still watching orders collection")
+                    last_heartbeat = time.time()
+                
+                time.sleep(0.1)
     except Exception as e:
         print(f"[ORDERS] Stream error: {e}")
 
@@ -42,13 +53,23 @@ def watch_inventory():
     """Watch inventory collection and publish to inventory-events topic"""
     print("Watching inventory collection...")
     inventory_collection = db["inventory"]
+    last_heartbeat = time.time()
     try:
-        with inventory_collection.watch(full_document = "updateLookup") as stream:
-            for event in stream:
-                message = json.dumps(event, default = str)
-                message_bytes = message.encode("utf-8")
-                future = publisher.publish(inventory_topic, message_bytes)
-                print(f"[INVENTORY] Published event: {future.result()}")
+        with inventory_collection.watch(full_document="updateLookup") as stream:
+            while True:
+                event = stream.try_next()
+                
+                if event is not None:
+                    message = json.dumps(event, default=str)
+                    message_bytes = message.encode("utf-8")
+                    future = publisher.publish(inventory_topic, message_bytes)
+                    print(f"[INVENTORY] Published event: {future.result()}")
+                
+                if time.time() - last_heartbeat >= 30:
+                    print(f"[HEARTBEAT] watch_inventory is alive - still watching inventory collection")
+                    last_heartbeat = time.time()
+                
+                time.sleep(0.1)
     except Exception as e:
         print(f"[INVENTORY] Stream error: {e}")
 
