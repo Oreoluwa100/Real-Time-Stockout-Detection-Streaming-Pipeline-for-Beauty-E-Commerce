@@ -42,7 +42,7 @@ Email Alerts (stockout + pipeline failure notifications)
 
 ## The Journey, Step by Step
 
-### Step 1 - Event Design and Simulation
+### Step 1: Event Design and Simulation
 
 Since this project simulates a real business, the first decision was what events to capture and what they should look like.
 
@@ -87,7 +87,7 @@ The simulator (`simulate_events.py`) generates continuous realistic events every
 
 ---
 
-### Step 2 — Change Data Capture with MongoDB Change Streams
+### Step 2: Change Data Capture with MongoDB Change Streams
 
 The listener (`listener.py`) watches both MongoDB collections in real time using Change Streams, MongoDB's CDC mechanism. Every insert triggers an event that gets published to Google Cloud Pub/Sub.
 
@@ -109,7 +109,7 @@ Threading was necessary because `collection.watch()` is a blocking call, a singl
 
 ---
 
-### Step 3 — Stream Processing with Apache Beam
+### Step 3: Stream Processing with Apache Beam
 
 The pipeline (`pipeline.py`) reads from both Pub/Sub topics, transforms the raw MongoDB change events into clean BigQuery rows, and handles failures explicitly.
 
@@ -140,7 +140,7 @@ This pattern was validated during development: a field name mismatch (`id` vs `_
 
 ---
 
-### Step 4 — Observability: Monitoring and Alerting
+### Step 4: Observability: Monitoring and Alerting
 
 Two silent failure points exist between the components that no application-level code can catch:
 
