@@ -147,10 +147,10 @@ Two silent failure points exist between the components that no application-level
 **Silent failure 1 - MongoDB → Pub/Sub gap**
 If the listener crashes, events stop flowing to Pub/Sub with no error surfaced downstream. Addressed by: heartbeat logging in `listener.py` (Step 2).
 
-**Silent failure 2 — Pub/Sub → Beam gap**
+**Silent failure 2 - Pub/Sub → Beam gap**
 If the pipeline stops consuming messages, they pile up in Pub/Sub with no notification. Addressed by: a Google Cloud Monitoring alert on `subscription/oldest_unacked_message_age`. If either subscription has messages older than 5 minutes, an alert email fires automatically.
 
-**Business alert — Stockout detection**
+**Business alert - Stockout detection**
 The alert script (`alerts.py`) runs every 5 minutes via Cloud Scheduler, querying BigQuery for:
 - New rows in `failed_events` → pipeline health alert
 - Orders with `order_status = 'failed'` → stockout alert
