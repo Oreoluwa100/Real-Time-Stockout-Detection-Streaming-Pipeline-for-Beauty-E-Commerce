@@ -1,4 +1,4 @@
-# Real-Time E-Commerce Streaming Pipeline
+# Real-Time Stockout Detection Streaming Pipeline for Beauty E-Commerce
 
 ## Project Narrative
 
